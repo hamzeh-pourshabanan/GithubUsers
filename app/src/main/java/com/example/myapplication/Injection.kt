@@ -18,7 +18,7 @@ object Injection {
      * Creates an instance of [GithubRepository] based on the [GithubService] and a
      * [GithubLocalCache]
      */
-    private fun provideGithubRepository(context: Context): GithubRepository {
+    fun provideGithubRepository(context: Context): GithubRepository {
         return GithubRepository(GithubService.create(), UserDatabase.getInstance(context))
     }
 
@@ -29,4 +29,5 @@ object Injection {
     fun provideViewModelFactory(context: Context, owner: SavedStateRegistryOwner): ViewModelProvider.Factory {
         return ViewModelFactory(owner, provideGithubRepository(context))
     }
+
 }

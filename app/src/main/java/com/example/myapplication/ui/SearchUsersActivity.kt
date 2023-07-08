@@ -2,17 +2,23 @@ package com.example.myapplication.ui
 
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.Injection
+import com.example.myapplication.R
 import com.example.myapplication.databinding.ActivitySearchUsersBinding
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,170 +30,47 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class SearchUsersActivity: AppCompatActivity() {
-
+    private lateinit var binding: ActivitySearchUsersBinding
+    protected var navController: NavController? = null
+    val viewModel: SearchUsersViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivitySearchUsersBinding.inflate(layoutInflater)
+        binding = ActivitySearchUsersBinding.inflate(layoutInflater)
         val view = binding.root
+
         setContentView(view)
+        initializeToolbar()
 
-        // get the view model
-        val viewModel = ViewModelProvider(
-            this, Injection.provideViewModelFactory(
-                context = this,
-                owner = this
-            )
-        )
-            .get(SearchUsersViewModel::class.java)
-
-        // add dividers between RecyclerView's row items
-        val decoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
-        binding.list.addItemDecoration(decoration)
-
-        // bind the state
-        binding.bindState(
-            uiState = viewModel.state,
-            pagingData = viewModel.pagingDataFlow,
-            uiActions = viewModel.accept
-        )
     }
 
-    /**
-     * Binds the [UiState] provided  by the [SearchRepositoriesViewModel] to the UI,
-     * and allows the UI to feed back user actions to it.
-     */
-    private fun ActivitySearchUsersBinding.bindState(
-        uiState: StateFlow<UiState>,
-        pagingData: Flow<PagingData<UiModel>>,
-        uiActions: (UiAction) -> Unit
-    ) {
-        val userAdapter = UsersAdapter()
-        val header = UsersLoadStateAdapter { userAdapter.retry() }
-        list.adapter = userAdapter.withLoadStateHeaderAndFooter(
-            header = header,
-            footer = UsersLoadStateAdapter { userAdapter.retry() }
-        )
-        bindSearch(
-            uiState = uiState,
-            onQueryChanged = uiActions
-        )
-        bindList(
-            header = header,
-            userAdapter = userAdapter,
-            uiState = uiState,
-            pagingData = pagingData,
-            onScrollChanged = uiActions
-        )
-    }
+    fun showToolbar(): Boolean = false
 
-    private fun ActivitySearchUsersBinding.bindSearch(
-        uiState: StateFlow<UiState>,
-        onQueryChanged: (UiAction.Search) -> Unit
-    ) {
-        searchRepo.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_GO) {
-                updateRepoListFromInput(onQueryChanged)
-                true
-            } else {
-                false
-            }
-        }
-        searchRepo.setOnKeyListener { _, keyCode, event ->
-            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                updateRepoListFromInput(onQueryChanged)
-                true
-            } else {
-                false
-            }
+    private fun initializeToolbar() {
+        binding.appBarLayout.visibility = View.VISIBLE
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(false)
+            setHomeButtonEnabled(false)
+            setDisplayShowTitleEnabled(false)
         }
 
-        lifecycleScope.launch {
-            uiState
-                .map { it.query }
-                .distinctUntilChanged()
-                .collect(searchRepo::setText)
-        }
-    }
+        binding.toolbar.navigationIcon = null
+        binding.appBarLayout.visibility = if (showToolbar()) View.VISIBLE else View.GONE
 
-    private fun ActivitySearchUsersBinding.updateRepoListFromInput(onQueryChanged: (UiAction.Search) -> Unit) {
-        searchRepo.text.trim().let {
-            if (it.isNotEmpty()) {
-                list.scrollToPosition(0)
-                onQueryChanged(UiAction.Search(query = it.toString()))
-            }
-        }
-    }
-
-    private fun ActivitySearchUsersBinding.bindList(
-        header: UsersLoadStateAdapter,
-        userAdapter: UsersAdapter,
-        uiState: StateFlow<UiState>,
-        pagingData: Flow<PagingData<UiModel>>,
-        onScrollChanged: (UiAction.Scroll) -> Unit
-    ) {
-        retryButton.setOnClickListener { userAdapter.retry() }
-        list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy != 0) onScrollChanged(UiAction.Scroll(currentQuery = uiState.value.query))
-            }
-        })
-        val notLoading = userAdapter.loadStateFlow
-            .asRemotePresentationState()
-            .map { it == RemotePresentationState.PRESENTED }
-
-        val hasNotScrolledForCurrentSearch = uiState
-            .map { it.hasNotScrolledForCurrentSearch }
-            .distinctUntilChanged()
-
-        val shouldScrollToTop = combine(
-            notLoading,
-            hasNotScrolledForCurrentSearch,
-            Boolean::and
-        ).distinctUntilChanged()
-
-        lifecycleScope.launch {
-            pagingData.collectLatest(userAdapter::submitData)
-        }
-
-        lifecycleScope.launch {
-            shouldScrollToTop.collect { shouldScroll ->
-                if (shouldScroll) list.scrollToPosition(0)
-            }
-        }
-
-        lifecycleScope.launch {
-            userAdapter.loadStateFlow.collect { loadState ->
-                // Show a retry header if there was an error refreshing, and items were previously
-                // cached OR default to the default prepend state
-                header.loadState = loadState.mediator
-                    ?.refresh
-                    ?.takeIf { it is LoadState.Error && userAdapter.itemCount > 0 }
-                    ?: loadState.prepend
-
-                val isListEmpty = loadState.refresh is LoadState.NotLoading && userAdapter.itemCount == 0
-                // show empty list
-                emptyList.isVisible = isListEmpty
-                // Only show the list if refresh succeeds, either from the the local db or the remote.
-                list.isVisible =  loadState.source.refresh is LoadState.NotLoading || loadState.mediator?.refresh is LoadState.NotLoading
-                // Show loading spinner during initial load or refresh.
-                progressBar.isVisible = loadState.mediator?.refresh is LoadState.Loading
-                // Show the retry state if initial load or refresh fails.
-                retryButton.isVisible = loadState.mediator?.refresh is LoadState.Error && userAdapter.itemCount == 0
-                // Toast on any error, regardless of whether it came from RemoteMediator or PagingSource
-                val errorState = loadState.source.append as? LoadState.Error
-                    ?: loadState.source.prepend as? LoadState.Error
-                    ?: loadState.append as? LoadState.Error
-                    ?: loadState.prepend as? LoadState.Error
-                errorState?.let {
-                    Toast.makeText(
-                        this@SearchUsersActivity,
-                        "\uD83D\uDE28 Wooops ${it.error}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
+        binding.toolbarActionArea.setOnClickListener {
+            onBackPressed()
         }
     }
 
 
+
+    private fun initializeNavigationGraph() {
+        val navigationGraph = R.navigation.nav_graph
+        navigationGraph.let {
+            val navHostFragment = binding.navHostFragment as NavHostFragment
+//                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            navController = navHostFragment.navController
+            navController?.setGraph(it)
+        }
+    }
 }
