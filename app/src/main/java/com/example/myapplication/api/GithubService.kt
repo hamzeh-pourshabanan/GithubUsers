@@ -17,7 +17,7 @@ interface GithubService {
     /**
      * Get users.
      */
-    @GET("search/users?sort=stars")
+    @GET("search/users")
     suspend fun searchUsers(
         @Query("q") query: String,
         @Query("page") page: Int,

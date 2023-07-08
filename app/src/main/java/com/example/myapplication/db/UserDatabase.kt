@@ -9,10 +9,9 @@ import com.example.myapplication.model.User
 
 @Database(
     entities = [User::class, RemoteKeys::class],
-    version = 2,
+    version = 5,
     exportSchema = false
 )
-@TypeConverters(TypeAdapters::class)
 abstract class UserDatabase: RoomDatabase() {
 
     abstract fun usersDao(): UsersDao
@@ -33,7 +32,7 @@ abstract class UserDatabase: RoomDatabase() {
             Room.databaseBuilder(
                 context.applicationContext,
                 UserDatabase::class.java, "Github.db"
-            )
+            ).fallbackToDestructiveMigration()
                 .build()
     }
 }

@@ -15,8 +15,7 @@ interface UsersDao {
 
     @Query(
         "SELECT * FROM users WHERE " +
-                "login LIKE :queryString " +
-                "ORDER BY login DESC"
+                "login LIKE :queryString "
     )
     fun usersByName(queryString: String): PagingSource<Int, User>
 

@@ -19,7 +19,7 @@ class UsersAdapter : PagingDataAdapter<UiModel, UserViewHolder>(UIMODEL_COMPARAT
         private val UIMODEL_COMPARATOR = object : DiffUtil.ItemCallback<UiModel>() {
             override fun areItemsTheSame(oldItem: UiModel, newItem: UiModel): Boolean {
                 return (oldItem is UiModel.UserItem && newItem is UiModel.UserItem &&
-                        oldItem.user.id == newItem.user.id)
+                        oldItem.user.id == newItem.user.id && oldItem.user.login == newItem.user.login)
             }
 
             override fun areContentsTheSame(oldItem: UiModel, newItem: UiModel): Boolean =
