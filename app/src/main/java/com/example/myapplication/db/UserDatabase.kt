@@ -14,6 +14,7 @@ import com.example.myapplication.model.User
 abstract class UserDatabase: RoomDatabase() {
 
     abstract fun usersDao(): UsersDao
+    abstract fun remoteKeysDao(): RemoteKeysDao
 
     companion object {
 

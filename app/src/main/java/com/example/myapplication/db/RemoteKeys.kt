@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "remote_keys")
 class RemoteKeys(
-    @PrimaryKey val repoId: Long,
+    @PrimaryKey val userId: Long,
     val prevKey: Int?,
     val nextKey: Int?
 ) {
