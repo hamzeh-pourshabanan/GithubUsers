@@ -16,18 +16,18 @@ class SearchUsersActivity: AppCompatActivity() {
         setContentView(view)
 
         // get the view model
-//        val viewModel = ViewModelProvider(
-//            this, Injection.provideViewModelFactory(
-//                context = this,
-//                owner = this
-//            )
-//        )
-//            .get(SearchRepositoriesViewModel::class.java)
-//
-//        // add dividers between RecyclerView's row items
-//        val decoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
-//        binding.list.addItemDecoration(decoration)
-//
+        val viewModel = ViewModelProvider(
+            this, Injection.provideViewModelFactory(
+                context = this,
+                owner = this
+            )
+        )
+            .get(SearchUsersViewModel::class.java)
+
+        // add dividers between RecyclerView's row items
+        val decoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        binding.list.addItemDecoration(decoration)
+
 //        // bind the state
 //        binding.bindState(
 //            uiState = viewModel.state,
@@ -35,4 +35,6 @@ class SearchUsersActivity: AppCompatActivity() {
 //            uiActions = viewModel.accept
 //        )
     }
+
+
 }
