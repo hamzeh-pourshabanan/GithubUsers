@@ -5,7 +5,7 @@ import androidx.room.Entity
 @Entity(tableName = "users")
 data class User(
     val login: String?,
-    val id: Int?,
+    val id: Long,
     val node_id: String?,
     val avatar_url: String?,
     val gravatar_id: String?,
