@@ -21,5 +21,5 @@ interface UsersDao {
     fun usersByName(queryString: String): PagingSource<Int, User>
 
     @Query("DELETE FROM users")
-    suspend fun clearUsers(): Int
+    suspend fun clearUsers(): Unit
 }

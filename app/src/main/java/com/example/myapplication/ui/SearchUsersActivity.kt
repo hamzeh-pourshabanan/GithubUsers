@@ -1,4 +1,6 @@
 package com.example.myapplication.ui
 
-class SearchUsersActivity {
+import androidx.appcompat.app.AppCompatActivity
+
+class SearchUsersActivity: AppCompatActivity() {
 }

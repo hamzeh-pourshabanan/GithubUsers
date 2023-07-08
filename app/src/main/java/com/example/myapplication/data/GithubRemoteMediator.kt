@@ -75,7 +75,7 @@ class GithubRemoteMediator(
                 // clear all tables in the database
                 if (loadType == LoadType.REFRESH) {
                     userDatabase.remoteKeysDao().clearRemoteKeys()
-                    userDatabase.usersDao().clearUsers()
+                    val deletedUser = userDatabase.usersDao().clearUsers()
                 }
                 val prevKey = if (page == GITHUB_STARTING_PAGE_INDEX) null else page - 1
                 val nextKey = if (endOfPaginationReached) null else page + 1

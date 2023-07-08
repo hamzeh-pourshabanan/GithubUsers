@@ -4,13 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.myapplication.model.User
 
 @Database(
     entities = [User::class, RemoteKeys::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
+@TypeConverters(TypeAdapters::class)
 abstract class UserDatabase: RoomDatabase() {
 
     abstract fun usersDao(): UsersDao
