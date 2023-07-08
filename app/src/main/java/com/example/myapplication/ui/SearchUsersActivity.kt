@@ -5,13 +5,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.myapplication.Injection
-import com.example.myapplication.databinding.ActivitySearchRepositoriesBinding
+import com.example.myapplication.databinding.ActivitySearchUsersBinding
 
 class SearchUsersActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivitySearchRepositoriesBinding.inflate(layoutInflater)
+        val binding = ActivitySearchUsersBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
