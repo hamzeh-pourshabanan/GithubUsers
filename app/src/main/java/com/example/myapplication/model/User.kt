@@ -1,5 +1,8 @@
 package com.example.myapplication.model
 
+import androidx.room.Entity
+
+@Entity(tableName = "users")
 data class User(
     val login: String?,
     val id: Int?,
