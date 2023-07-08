@@ -61,7 +61,7 @@ class SearchUsersViewModel(
             .onStart { emit(UiAction.Scroll(currentQuery = lastQueryScrolled)) }
 
         pagingDataFlow = searches
-            .flatMapLatest { searchRepo(queryString = it.query) }
+            .flatMapLatest { searchUser(queryString = it.query) }
             .cachedIn(viewModelScope)
 
         state = combine(
@@ -88,9 +88,9 @@ class SearchUsersViewModel(
     }
 
 
-    private fun searchRepo(queryString: String): Flow<PagingData<UiModel>> =
+    private fun searchUser(queryString: String): Flow<PagingData<UiModel>> =
         repository.getSearchResultStream(queryString)
-            .map { pagingData -> pagingData.map { UiModel.RepoItem(it) } }
+            .map { pagingData -> pagingData.map { UiModel.UserItem(it) } }
 
     override fun onCleared() {
         savedStateHandle[LAST_SEARCH_QUERY] = state.value.query
@@ -112,10 +112,9 @@ data class UiState(
 )
 
 sealed class UiModel {
-    data class RepoItem(val repo: User) : UiModel()
-    data class SeparatorItem(val description: String) : UiModel()
+    data class UserItem(val user: User) : UiModel()
 }
 
 private const val LAST_QUERY_SCROLLED: String = "last_query_scrolled"
 private const val LAST_SEARCH_QUERY: String = "last_search_query"
-private const val DEFAULT_QUERY = "Android"
+private const val DEFAULT_QUERY = "hamzeh"
