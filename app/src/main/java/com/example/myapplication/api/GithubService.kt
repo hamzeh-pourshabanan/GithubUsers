@@ -5,6 +5,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 const val IN_QUALIFIER = "in:login"
@@ -24,6 +25,10 @@ interface GithubService {
         @Query("per_page") itemsPerPage: Int
     ): UserSearchResponse
 
+    @GET("search/users/{login}")
+    suspend fun getUserInfo(
+        @Path("login") login: String,
+    ): UserSearchResponse
     companion object {
         private const val BASE_URL = "https://api.github.com/"
 

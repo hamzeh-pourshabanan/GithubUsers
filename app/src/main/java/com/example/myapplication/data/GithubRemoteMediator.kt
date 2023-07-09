@@ -20,7 +20,7 @@ class GithubRemoteMediator(
     private val query: String,
     private val service: GithubService,
     private val userDatabase: UserDatabase
-) : RemoteMediator<Int, User>()  {
+) : RemoteMediator<Int, User>() {
 
     val visitedPages = mutableMapOf<Int, String>()
     override suspend fun initialize(): InitializeAction {
@@ -39,11 +39,13 @@ class GithubRemoteMediator(
                 }
                 remoteKeys?.nextKey?.minus(1) ?: GITHUB_STARTING_PAGE_INDEX
             }
+
             LoadType.PREPEND -> {
                 return MediatorResult.Success(
                     endOfPaginationReached = true
                 )
             }
+
             LoadType.APPEND -> {
                 val remoteKey = userDatabase.withTransaction {
                     userDatabase.remoteKeysDao().remoteKeysUserId(query)
@@ -66,30 +68,30 @@ class GithubRemoteMediator(
 
         val apiQuery = query + IN_QUALIFIER
 
-            try {
-                val apiResponse = service.searchUsers(apiQuery, page, state.config.pageSize)
-                val users = apiResponse.items
-                val endOfPaginationReached = users.isEmpty()
+        try {
+            val apiResponse = service.searchUsers(apiQuery, page, state.config.pageSize)
+            val users = apiResponse.items
+            val endOfPaginationReached = users.isEmpty()
 
-                userDatabase.withTransaction {
-                    // clear all tables in the database
-                    if (loadType == LoadType.REFRESH) {
-                        userDatabase.remoteKeysDao().clearRemoteKeys()
-                        val deletedUsers = userDatabase.usersDao().clearUsers()
-                    }
-                    val prevKey = if (page == GITHUB_STARTING_PAGE_INDEX) null else page - 1
-                    val nextKey = if (endOfPaginationReached) null else page + 1
-                    val key = RemoteKeys(query = query, prevKey = prevKey, nextKey = nextKey)
-                    userDatabase.usersDao().insertAll(users)
-                    userDatabase.remoteKeysDao().insertOrReplace(key)
-
+            userDatabase.withTransaction {
+                // clear all tables in the database
+                if (loadType == LoadType.REFRESH) {
+                    userDatabase.remoteKeysDao().clearRemoteKeys()
+                    val deletedUsers = userDatabase.usersDao().clearUsers()
                 }
-                return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
-            } catch (exception: IOException) {
-                return MediatorResult.Error(exception)
-            } catch (exception: HttpException) {
-                return MediatorResult.Error(exception)
+                val prevKey = if (page == GITHUB_STARTING_PAGE_INDEX) null else page - 1
+                val nextKey = if (endOfPaginationReached) null else page + 1
+                val key = RemoteKeys(query = query, prevKey = prevKey, nextKey = nextKey)
+                userDatabase.usersDao().insertAll(users)
+                userDatabase.remoteKeysDao().insertOrReplace(key)
+
             }
+            return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
+        } catch (exception: IOException) {
+            return MediatorResult.Error(exception)
+        } catch (exception: HttpException) {
+            return MediatorResult.Error(exception)
+        }
 
 
     }
