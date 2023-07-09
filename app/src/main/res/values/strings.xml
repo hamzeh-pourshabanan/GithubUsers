@@ -6,4 +6,8 @@
     <string name="no_results">No results 😓</string>
     <string name="unknown">\?</string>
     <string name="retry">Retry</string>
+    <string name="searh_toolbar_title">Search Repo Users</string>
+    <string name="details_toolbar_title">Users Details</string>
+    <string name="followers">followers: %s</string>
+    <string name="repos">repos: %s</string>
 </resources>

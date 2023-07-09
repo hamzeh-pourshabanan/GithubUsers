@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import com.example.myapplication.data.GithubRepository
 import com.example.myapplication.ui.SearchUsersViewModel
+import com.example.myapplication.ui.details.DetailsViewModel
 
 /**
  * Factory for ViewModels
@@ -39,6 +40,9 @@ class ViewModelFactory(
         if (modelClass.isAssignableFrom(SearchUsersViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return SearchUsersViewModel(repository, handle) as T
+        } else if (modelClass.isAssignableFrom(DetailsViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return DetailsViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

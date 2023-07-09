@@ -13,7 +13,7 @@ import com.example.myapplication.model.User
 /**
  * View Holder for a [User] RecyclerView list item.
  */
-class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+class UserViewHolder(view: View, action: (String) -> Unit) : RecyclerView.ViewHolder(view) {
     private val name: TextView = view.findViewById(R.id.repo_name)
     private val description: TextView = view.findViewById(R.id.repo_description)
 
@@ -22,9 +22,10 @@ class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     init {
         view.setOnClickListener {
-            user?.html_url?.let { url ->
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                view.context.startActivity(intent)
+            user?.login?.let { login ->
+                action.invoke(login)
+//                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+//                view.context.startActivity(intent)
             }
         }
     }
@@ -54,10 +55,10 @@ class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
 
     companion object {
-        fun create(parent: ViewGroup): UserViewHolder {
+        fun create(parent: ViewGroup, action: (String) -> Unit): UserViewHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.user_view_item, parent, false)
-            return UserViewHolder(view)
+            return UserViewHolder(view, action)
         }
     }
 }

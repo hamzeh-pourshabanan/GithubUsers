@@ -10,13 +10,17 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.Injection
+import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentUserSearchBinding
+import com.example.myapplication.ui.SearchUsersActivity
 import com.example.myapplication.ui.SearchUsersViewModel
 import com.example.myapplication.ui.UiAction
 import com.example.myapplication.ui.UiModel
@@ -35,16 +39,24 @@ class SearchFragment: Fragment() {
     private val binding: FragmentUserSearchBinding
         get() = _binding!!
 
-    private val viewModel: SearchUsersViewModel  by activityViewModels{
-        Injection.provideViewModelFactory(requireContext(), requireActivity())
+    private val viewModel: SearchUsersViewModel  by viewModels{
+        Injection.provideViewModelFactory(requireContext(), this)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         _binding = FragmentUserSearchBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as SearchUsersActivity).showBackButton(false)
+        (activity as SearchUsersActivity).setToolbarTitle(requireActivity().getString(R.string.searh_toolbar_title))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,7 +83,11 @@ class SearchFragment: Fragment() {
         pagingData: Flow<PagingData<UiModel>>,
         uiActions: (UiAction) -> Unit
     ) {
-        val userAdapter = UsersAdapter()
+        val userAdapter = UsersAdapter {
+            findNavController().navigate(
+                SearchFragmentDirections.actionSearchFragmentToDetailsFragment(it)
+            )
+        }
         val header = UsersLoadStateAdapter { userAdapter.retry() }
         list.adapter = userAdapter.withLoadStateHeaderAndFooter(
             header = header,

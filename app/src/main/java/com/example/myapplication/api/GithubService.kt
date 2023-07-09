@@ -25,8 +25,8 @@ interface GithubService {
         @Query("per_page") itemsPerPage: Int
     ): UserSearchResponse
 
-    @GET("search/users/{login}")
-    fun getUserInfo(
+    @GET("users/{login}")
+    suspend fun getUserInfo(
         @Path("login") login: String,
     ): UserDetailsResponse
     companion object {

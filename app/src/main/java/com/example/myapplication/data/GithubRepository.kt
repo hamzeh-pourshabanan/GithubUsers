@@ -10,8 +10,13 @@ import com.example.myapplication.api.GithubService
 import com.example.myapplication.api.UserDetailsResponse
 import com.example.myapplication.db.UserDatabase
 import com.example.myapplication.model.User
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import java.lang.Error
@@ -47,17 +52,25 @@ class GithubRepository(
         ).flow
     }
 
-    fun getDetails(query: String): GenericResponse {
-        try {
-            val details = service.getUserInfo(query)
-            return GenericResponse.Success(details)
-        }catch (exception: IOException) {
-            return GenericResponse.Error(exception.message)
-        } catch (exception: HttpException) {
-            return GenericResponse.ApiError(exception.message)
+    fun getDetails(query: String): Flow<GenericResponse>  =
+        flow<GenericResponse> {
+            val details: UserDetailsResponse = service.getUserInfo(query)
+            emit(GenericResponse.Success(details))
         }
+            .catch { e->
+                when(e) {
+                    is IOException -> {
+                        emit(GenericResponse.Error(e.message))
+                    }
 
-    }
+                    is HttpException -> {
+                        emit(GenericResponse.ApiError(e.message))
+                    }
+                    else -> {
+                        emit(GenericResponse.ApiError(e.message))
+                    }
+                }
+            }
 
     sealed class GenericResponse {
         data class Success(val data: UserDetailsResponse): GenericResponse()

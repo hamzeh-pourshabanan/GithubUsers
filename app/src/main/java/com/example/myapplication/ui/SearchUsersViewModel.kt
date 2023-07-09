@@ -6,12 +6,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import com.example.myapplication.api.UserDetailsResponse
 import com.example.myapplication.data.GithubRepository
 import com.example.myapplication.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -22,7 +20,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SearchUsersViewModel(
@@ -37,12 +34,6 @@ class SearchUsersViewModel(
     val state: StateFlow<UiState>
 
     val pagingDataFlow: Flow<PagingData<UiModel>>
-
-    /**
-     * Stream of immutable states representative of the Details UI
-     */
-    private val _detailsState: MutableStateFlow<DetailsStates> = MutableStateFlow(DetailsStates.Loading)
-    val detailsState: StateFlow<DetailsStates> = _detailsState
 
 
     /**
@@ -102,37 +93,12 @@ class SearchUsersViewModel(
         repository.getSearchResultStream(queryString)
             .map { pagingData -> pagingData.map { UiModel.UserItem(it) } }
 
-    private fun getDetails(query: String) {
-        val response = repository.getDetails(query)
-        when(response) {
-            is GithubRepository.GenericResponse.ApiError -> {
-                _detailsState.update {
-                    DetailsStates.DetailsErrorState(response.error ?: "")
-                }
-            }
-            is GithubRepository.GenericResponse.Error -> {
-                _detailsState.update {
-                    DetailsStates.DetailsErrorState(response.error ?: "")
-                }
-            }
-            is GithubRepository.GenericResponse.Success -> {
-                _detailsState.update {
-                    DetailsStates.DetailsSuccessState(response.data)
-                }
-            }
-        }
-    }
+
     override fun onCleared() {
         savedStateHandle[LAST_SEARCH_QUERY] = state.value.query
         savedStateHandle[LAST_QUERY_SCROLLED] = state.value.lastQueryScrolled
         super.onCleared()
     }
-}
-
-sealed class DetailsStates {
-   data class DetailsSuccessState(val userDetailsResponse: UserDetailsResponse): DetailsStates()
-    data class DetailsErrorState(val error: String): DetailsStates()
-    object Loading: DetailsStates()
 }
 
 sealed class UiAction {

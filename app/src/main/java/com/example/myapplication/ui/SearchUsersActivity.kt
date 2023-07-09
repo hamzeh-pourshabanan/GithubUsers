@@ -31,8 +31,6 @@ import kotlinx.coroutines.launch
 
 class SearchUsersActivity: AppCompatActivity() {
     private lateinit var binding: ActivitySearchUsersBinding
-    protected var navController: NavController? = null
-    val viewModel: SearchUsersViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchUsersBinding.inflate(layoutInflater)
@@ -43,7 +41,19 @@ class SearchUsersActivity: AppCompatActivity() {
 
     }
 
-    fun showToolbar(): Boolean = false
+    fun showToolbar(show: Boolean = true): Boolean {
+        binding.appBarLayout.visibility = if (show) View.VISIBLE else View.GONE
+        return show
+    }
+
+    fun showBackButton(show: Boolean = false): Boolean {
+        binding.toolbarAction.visibility = if (show) View.VISIBLE else View.GONE
+        return show
+    }
+
+    fun setToolbarTitle(title: String ) {
+        binding.toolbarTitle.text = title
+    }
 
     private fun initializeToolbar() {
         binding.appBarLayout.visibility = View.VISIBLE
@@ -59,18 +69,6 @@ class SearchUsersActivity: AppCompatActivity() {
 
         binding.toolbarActionArea.setOnClickListener {
             onBackPressed()
-        }
-    }
-
-
-
-    private fun initializeNavigationGraph() {
-        val navigationGraph = R.navigation.nav_graph
-        navigationGraph.let {
-            val navHostFragment = binding.navHostFragment as NavHostFragment
-//                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-            navController = navHostFragment.navController
-            navController?.setGraph(it)
         }
     }
 }
