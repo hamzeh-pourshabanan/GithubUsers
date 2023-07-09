@@ -5,10 +5,16 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.RemoteMediator
 import com.example.myapplication.api.GithubService
+import com.example.myapplication.api.UserDetailsResponse
 import com.example.myapplication.db.UserDatabase
 import com.example.myapplication.model.User
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import retrofit2.HttpException
+import java.io.IOException
+import java.lang.Error
 
 /**
  * Repository class that works with local and remote data sources.
@@ -39,6 +45,24 @@ class GithubRepository(
             ),
             pagingSourceFactory = pagingSourceFactory
         ).flow
+    }
+
+    fun getDetails(query: String): GenericResponse {
+        try {
+            val details = service.getUserInfo(query)
+            return GenericResponse.Success(details)
+        }catch (exception: IOException) {
+            return GenericResponse.Error(exception.message)
+        } catch (exception: HttpException) {
+            return GenericResponse.ApiError(exception.message)
+        }
+
+    }
+
+    sealed class GenericResponse {
+        data class Success(val data: UserDetailsResponse): GenericResponse()
+        data class Error(val error: String?): GenericResponse()
+        data class ApiError(val error: String?): GenericResponse()
     }
 
     companion object {

@@ -26,9 +26,9 @@ interface GithubService {
     ): UserSearchResponse
 
     @GET("search/users/{login}")
-    suspend fun getUserInfo(
+    fun getUserInfo(
         @Path("login") login: String,
-    ): UserSearchResponse
+    ): UserDetailsResponse
     companion object {
         private const val BASE_URL = "https://api.github.com/"
 
