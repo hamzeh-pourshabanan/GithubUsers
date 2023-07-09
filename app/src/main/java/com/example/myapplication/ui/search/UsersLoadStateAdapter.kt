@@ -1,4 +1,4 @@
-package com.example.myapplication.ui
+package com.example.myapplication.ui.search
 
 import android.view.ViewGroup
 import androidx.paging.LoadState

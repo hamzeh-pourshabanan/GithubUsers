@@ -1,8 +1,9 @@
-package com.example.myapplication.ui
+package com.example.myapplication.ui.search
 
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
+import com.example.myapplication.ui.UiModel
 
 class UsersAdapter : PagingDataAdapter<UiModel, UserViewHolder>(UIMODEL_COMPARATOR)  {
 

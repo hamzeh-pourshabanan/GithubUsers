@@ -6,7 +6,7 @@ import androidx.savedstate.SavedStateRegistryOwner
 import com.example.myapplication.api.GithubService
 import com.example.myapplication.data.GithubRepository
 import com.example.myapplication.db.UserDatabase
-import com.example.myapplication.ui.ViewModelFactory
+import com.example.myapplication.ui.search.ViewModelFactory
 
 /**
  * Class that handles object creation.

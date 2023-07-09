@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -18,15 +17,10 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.Injection
 import com.example.myapplication.databinding.FragmentUserSearchBinding
-import com.example.myapplication.ui.RemotePresentationState
 import com.example.myapplication.ui.SearchUsersViewModel
 import com.example.myapplication.ui.UiAction
 import com.example.myapplication.ui.UiModel
 import com.example.myapplication.ui.UiState
-import com.example.myapplication.ui.UsersAdapter
-import com.example.myapplication.ui.UsersLoadStateAdapter
-import com.example.myapplication.ui.ViewModelFactory
-import com.example.myapplication.ui.asRemotePresentationState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest

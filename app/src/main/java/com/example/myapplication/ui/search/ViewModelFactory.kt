@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.example.myapplication.ui
+package com.example.myapplication.ui.search
 
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import com.example.myapplication.data.GithubRepository
+import com.example.myapplication.ui.SearchUsersViewModel
 
 /**
  * Factory for ViewModels

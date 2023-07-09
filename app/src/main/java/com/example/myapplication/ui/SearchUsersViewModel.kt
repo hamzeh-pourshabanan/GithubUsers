@@ -34,6 +34,7 @@ class SearchUsersViewModel(
     val state: StateFlow<UiState>
 
     val pagingDataFlow: Flow<PagingData<UiModel>>
+    
 
     /**
      * Processor of side effects from the UI which in turn feedback into [state]
