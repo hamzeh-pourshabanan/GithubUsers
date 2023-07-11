@@ -53,15 +53,9 @@ class SearchFragment: Fragment() {
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-        (activity as SearchUsersActivity).showBackButton(false)
-        (activity as SearchUsersActivity).setToolbarTitle(requireActivity().getString(R.string.searh_toolbar_title))
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        setupToolbar()
         // add dividers between RecyclerView's row items
         val decoration = DividerItemDecoration(this.requireActivity(), DividerItemDecoration.VERTICAL)
         binding.list.addItemDecoration(decoration)
@@ -72,6 +66,11 @@ class SearchFragment: Fragment() {
             pagingData = viewModel.pagingDataFlow,
             uiActions = viewModel.accept
         )
+    }
+
+    private fun setupToolbar() {
+        (activity as SearchUsersActivity).showBackButton(false)
+        (activity as SearchUsersActivity).setToolbarTitle(requireActivity().getString(R.string.searh_toolbar_title))
     }
 
     /**
