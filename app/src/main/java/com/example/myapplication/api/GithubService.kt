@@ -8,7 +8,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-const val IN_QUALIFIER = "in:login"
+const val IN_QUALIFIER = "in:login,name"
 
 /**
  * Github API communication setup via Retrofit.
