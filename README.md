@@ -1,0 +1,3 @@
+# GitHub Users Android App
+
+GitHub Users is an Android app developed to showcase advanced techniques in modern Android app development. This project highlights the effective handling of pagination using the Paging 3 library and demonstrates event and state management through the utilization of Kotlin Flows. With a focus on seamless user experience and efficient data retrieval, the app allows you to fetch GitHub users, implement pagination, search users by usernames, and view detailed information about specific users. Built using the latest Android technologies and best practices, this project provides valuable insights into building robust and responsive applications.
